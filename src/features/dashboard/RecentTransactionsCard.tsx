@@ -13,7 +13,7 @@ import Typography from '@mui/material/Typography';
 import { Link as RouterLink } from 'react-router';
 import type { Account } from '../../types/account';
 import type { Category } from '../../types/category';
-import { isTransfer, type Transaction } from '../../types/transaction';
+import { isDebtMovement, isTransfer, type Transaction } from '../../types/transaction';
 import { formatCalendarDate } from '../../utils/date';
 import { formatMoney } from '../../utils/money';
 import { CategoryAvatar } from '../categories/CategoryAvatar';
@@ -67,7 +67,15 @@ export function RecentTransactionsCard({
               const currency = account?.currency ?? 'INR';
               const category = tx.categoryId ? categoryById.get(tx.categoryId) : undefined;
               const transfer = isTransfer(tx);
-              const sign = tx.type === 'INCOME' ? '+' : transfer ? '' : '−';
+              const debt = isDebtMovement(tx);
+              // Transfers and debt movements are neither income nor expense, so they are drawn neutral.
+              const neutral = transfer || debt;
+              let sign = tx.type === 'INCOME' ? '+' : '−';
+              if (transfer) sign = '';
+              else if (debt) sign = tx.type === 'DEBT_IN' ? '+' : '−';
+              let label = category?.name ?? 'Uncategorised';
+              if (transfer) label = 'Transfer';
+              else if (debt) label = 'Lend & borrow';
               return (
                 <ListItem key={tx.id} disableGutters>
                   <ListItemAvatar sx={{ minWidth: 44 }}>
@@ -84,13 +92,13 @@ export function RecentTransactionsCard({
                   </ListItemAvatar>
                   <ListItemText
                     primary={tx.title}
-                    secondary={`${formatCalendarDate(tx.date, 'DD MMM')} · ${transfer ? 'Transfer' : (category?.name ?? 'Uncategorised')}`}
+                    secondary={`${formatCalendarDate(tx.date, 'DD MMM')} · ${label}`}
                     slotProps={{ primary: { noWrap: true } }}
                     sx={{ minWidth: 0, mr: 1 }}
                   />
                   <Typography
                     variant="body2"
-                    color={tx.type === 'INCOME' ? 'success.main' : transfer ? 'text.secondary' : 'text.primary'}
+                    color={tx.type === 'INCOME' ? 'success.main' : neutral ? 'text.secondary' : 'text.primary'}
                     sx={{ fontWeight: 600, fontVariantNumeric: 'tabular-nums', whiteSpace: 'nowrap' }}
                   >
                     {sign}

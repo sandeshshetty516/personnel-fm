@@ -11,6 +11,7 @@ import { LoginPage } from '../features/auth/LoginPage';
 import { RegisterPage } from '../features/auth/RegisterPage';
 import { ResetPasswordPage } from '../features/auth/ResetPasswordPage';
 import { DashboardPage } from '../features/dashboard/DashboardPage';
+import { DebtsPage } from '../features/debts/DebtsPage';
 import { SavingsGoalsPage } from '../features/savings/SavingsGoalsPage';
 import { SettingsPage } from '../features/settings/SettingsPage';
 import { TransactionsPage } from '../features/transactions/TransactionsPage';
@@ -39,6 +40,7 @@ export const routes: RouteObject[] = [
               { path: 'transactions', element: <TransactionsPage /> },
               { path: 'budgets', element: <BudgetsPage /> },
               { path: 'savings', element: <SavingsGoalsPage /> },
+              { path: 'lend-borrow', element: <DebtsPage /> },
               { path: 'accounts', element: <AccountsPage /> },
               { path: 'categories', element: <CategoriesPage /> },
               { path: 'settings', element: <SettingsPage /> },

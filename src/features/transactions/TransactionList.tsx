@@ -13,9 +13,10 @@ import Menu from '@mui/material/Menu';
 import MenuItem from '@mui/material/MenuItem';
 import Typography from '@mui/material/Typography';
 import { Fragment, useState } from 'react';
+import { Link as RouterLink } from 'react-router';
 import type { Account } from '../../types/account';
 import type { Category } from '../../types/category';
-import { isTransfer, PAYMENT_METHOD_LABELS, type Transaction } from '../../types/transaction';
+import { isDebtMovement, isTransfer, PAYMENT_METHOD_LABELS, type Transaction } from '../../types/transaction';
 import { formatCalendarDate } from '../../utils/date';
 import { formatMoney } from '../../utils/money';
 import { CategoryAvatar } from '../categories/CategoryAvatar';
@@ -29,6 +30,14 @@ function describe(tx: Transaction, { accounts, categories }: Lookups) {
   const account = accounts.get(tx.accountId);
   const currency = account?.currency ?? 'INR';
   const counterpart = tx.counterpartAccountId ? accounts.get(tx.counterpartAccountId)?.name : undefined;
+
+  if (isDebtMovement(tx)) {
+    return {
+      detail: ['Lend & borrow', account?.name].filter(Boolean).join(' · '),
+      amount: `${tx.type === 'DEBT_IN' ? '+' : '−'}${formatMoney(tx.amountPaise, currency)}`,
+      color: 'text.secondary',
+    };
+  }
 
   if (isTransfer(tx)) {
     const detail =
@@ -106,23 +115,34 @@ function Row({
         {amount}
       </Typography>
       <Menu anchorEl={anchor} open={Boolean(anchor)} onClose={close}>
-        <MenuItem
-          onClick={() => {
-            close();
-            onEdit();
-          }}
-        >
-          Edit
-        </MenuItem>
-        <MenuItem
-          onClick={() => {
-            close();
-            onDelete();
-          }}
-          sx={{ color: 'error.main' }}
-        >
-          Delete
-        </MenuItem>
+        {/* Debt-linked rows are changed from their lend/borrow record, so its totals stay in step. */}
+        {tx.debtId ? (
+          <MenuItem component={RouterLink} to="/lend-borrow" onClick={close}>
+            Open in Lend & borrow
+          </MenuItem>
+        ) : (
+          [
+            <MenuItem
+              key="edit"
+              onClick={() => {
+                close();
+                onEdit();
+              }}
+            >
+              Edit
+            </MenuItem>,
+            <MenuItem
+              key="delete"
+              onClick={() => {
+                close();
+                onDelete();
+              }}
+              sx={{ color: 'error.main' }}
+            >
+              Delete
+            </MenuItem>,
+          ]
+        )}
       </Menu>
     </ListItem>
   );

@@ -1,6 +1,7 @@
 import AccountBalanceOutlined from '@mui/icons-material/AccountBalanceOutlined';
 import CategoryOutlined from '@mui/icons-material/CategoryOutlined';
 import DashboardOutlined from '@mui/icons-material/DashboardOutlined';
+import HandshakeOutlined from '@mui/icons-material/HandshakeOutlined';
 import PieChartOutlined from '@mui/icons-material/PieChartOutlined';
 import ReceiptLongOutlined from '@mui/icons-material/ReceiptLongOutlined';
 import SavingsOutlined from '@mui/icons-material/SavingsOutlined';
@@ -24,6 +25,7 @@ const NAV_ITEMS: NavItem[] = [
   { label: 'Transactions', to: '/transactions', Icon: ReceiptLongOutlined },
   { label: 'Budgets', to: '/budgets', Icon: PieChartOutlined },
   { label: 'Savings goals', to: '/savings', Icon: SavingsOutlined },
+  { label: 'Lend & borrow', to: '/lend-borrow', Icon: HandshakeOutlined },
   { label: 'Accounts', to: '/accounts', Icon: AccountBalanceOutlined },
   { label: 'Categories', to: '/categories', Icon: CategoryOutlined },
   { label: 'Settings', to: '/settings', Icon: SettingsOutlined },
