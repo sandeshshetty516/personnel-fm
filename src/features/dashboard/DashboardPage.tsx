@@ -24,6 +24,7 @@ import {
   useRecentTransactions,
   useSavingsTrend,
 } from './dashboardApi';
+import { LendBorrowCard } from './LendBorrowCard';
 import { RecentTransactionsCard } from './RecentTransactionsCard';
 import { SavingsTrendChart } from './SavingsTrendChart';
 import { StatTile } from './StatTile';
@@ -202,9 +203,12 @@ export function DashboardPage() {
             viewAllHref={`/transactions?period=custom&from=${range.from}&to=${range.to}`}
           />
         </Grid>
-        <Grid size={{ xs: 12 }}>
+        <Grid size={{ xs: 12, lg: 7 }}>
           {/* Budgets for the latest month in the period that has started. */}
           <BudgetStatusCard date={range.to < today ? range.to : today} />
+        </Grid>
+        <Grid size={{ xs: 12, lg: 5 }}>
+          <LendBorrowCard currency={currency} />
         </Grid>
       </Grid>
     </Stack>

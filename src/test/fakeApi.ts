@@ -55,6 +55,8 @@ export function installFakeApi(routes: Record<string, Handler>) {
       'GET /dashboard/recent-transactions': () => ok({ transactions: [] }),
       'GET /budgets': () => ok({ budgets: [] }),
       'GET /savings-goals': () => ok({ goals: [] }),
+      'GET /debts': () => ok({ debts: [] }),
+      'GET /debts/summary': () => ok({ summaries: [] }),
     };
     const key = `${method} ${url}`;
     const handler =
