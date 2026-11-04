@@ -47,6 +47,8 @@ const tx = (overrides: Partial<Transaction>): Transaction => ({
   categoryId: 'groceries',
   transferGroupId: null,
   counterpartAccountId: null,
+  debtId: null,
+  affectsBalance: true,
   createdAt: '',
   updatedAt: '',
   ...overrides,
@@ -229,5 +231,29 @@ describe('TransactionsPage', () => {
 
     await user.click(within(confirm).getByRole('button', { name: 'Delete' }));
     await waitFor(() => expect(requests.some((r) => r.method === 'DELETE' && r.url === '/transactions/t3')).toBe(true));
+  });
+
+  it('shows lend/borrow movements as neutral and sends them to Lend & borrow instead of editing', async () => {
+    const lent = tx({
+      id: 't4',
+      type: 'DEBT_OUT',
+      amountPaise: 500_000,
+      title: 'Lent to Ravi',
+      categoryId: null,
+      paymentMethod: null,
+      debtId: 'd1',
+    });
+    setup({ 'GET /transactions': () => ok({ transactions: [lent] }, 200, { page: 1, pageSize: 20, total: 1, totalPages: 1 }) });
+    const user = userEvent.setup();
+    renderRoutes(routes, '/transactions');
+
+    const list = await screen.findByRole('list', { name: 'Transactions' });
+    expect(within(list).getByText('Lend & borrow · Savings')).toBeInTheDocument();
+    expect(within(list).getByText('−₹5,000.00')).toBeInTheDocument();
+
+    await user.click(screen.getByRole('button', { name: 'Actions for Lent to Ravi' }));
+    expect(screen.getByRole('menuitem', { name: 'Open in Lend & borrow' })).toHaveAttribute('href', '/lend-borrow');
+    expect(screen.queryByRole('menuitem', { name: 'Edit' })).not.toBeInTheDocument();
+    expect(screen.queryByRole('menuitem', { name: 'Delete' })).not.toBeInTheDocument();
   });
 });

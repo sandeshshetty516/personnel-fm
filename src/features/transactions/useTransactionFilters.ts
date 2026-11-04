@@ -4,7 +4,7 @@ import { useAuth } from '../../contexts/auth';
 import { PAYMENT_METHODS, type FilterType, type PaymentMethod, type TransactionFilters } from '../../types/transaction';
 import { periodRange, PERIODS, todayIn, type Period } from '../../utils/date';
 
-const FILTER_TYPES: readonly FilterType[] = ['INCOME', 'EXPENSE', 'TRANSFER'];
+const FILTER_TYPES: readonly FilterType[] = ['INCOME', 'EXPENSE', 'TRANSFER', 'DEBT'];
 const EDITABLE_KEYS = ['period', 'from', 'to', 'type', 'accountId', 'categoryId', 'paymentMethod', 'q'] as const;
 type EditableKey = (typeof EDITABLE_KEYS)[number];
 

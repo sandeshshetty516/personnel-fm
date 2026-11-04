@@ -1,5 +1,5 @@
 /** Mirrors transactionSchema in personnel-fm-be/src/modules/transactions/transactions.schemas.ts. */
-export const TRANSACTION_TYPES = ['INCOME', 'EXPENSE', 'TRANSFER_IN', 'TRANSFER_OUT'] as const;
+export const TRANSACTION_TYPES = ['INCOME', 'EXPENSE', 'TRANSFER_IN', 'TRANSFER_OUT', 'DEBT_IN', 'DEBT_OUT'] as const;
 export type TransactionType = (typeof TRANSACTION_TYPES)[number];
 
 export const PAYMENT_METHODS = ['CASH', 'UPI', 'DEBIT_CARD', 'CREDIT_CARD', 'NET_BANKING', 'CHEQUE', 'OTHER'] as const;
@@ -29,11 +29,17 @@ export interface Transaction {
   transferGroupId: string | null;
   /** For transfers: the account on the other side. */
   counterpartAccountId: string | null;
+  /** Set when the transaction belongs to a lend/borrow record; it is then changed only from there. */
+  debtId: string | null;
+  /** False only for bad-debt write-offs, which are expenses that move no balance. */
+  affectsBalance: boolean;
   createdAt: string;
   updatedAt: string;
 }
 
 export const isTransfer = (tx: Pick<Transaction, 'type'>) => tx.type === 'TRANSFER_IN' || tx.type === 'TRANSFER_OUT';
+/** Money lent, borrowed or repaid: moves a balance but is never income or expense. */
+export const isDebtMovement = (tx: Pick<Transaction, 'type'>) => tx.type === 'DEBT_IN' || tx.type === 'DEBT_OUT';
 
 export type EntryType = 'INCOME' | 'EXPENSE';
 
@@ -57,7 +63,7 @@ export interface TransferInput {
   notes?: string;
 }
 
-export type FilterType = 'INCOME' | 'EXPENSE' | 'TRANSFER';
+export type FilterType = 'INCOME' | 'EXPENSE' | 'TRANSFER' | 'DEBT';
 export type TransactionSort = 'date_desc' | 'date_asc' | 'amount_desc' | 'amount_asc';
 
 export interface TransactionFilters {

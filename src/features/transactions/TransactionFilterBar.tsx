@@ -43,10 +43,9 @@ export function TransactionFilterBar({
     return () => clearTimeout(timer);
   }, [search, urlQuery, setFilter]);
 
-  // Categories narrow to the chosen type; transfers have none.
-  const categoryOptions = categories.filter(
-    (c) => !filters.type || (filters.type !== 'TRANSFER' && c.type === filters.type),
-  );
+  // Categories narrow to the chosen type; transfers and lend/borrow movements have none.
+  const uncategorised = filters.type === 'TRANSFER' || filters.type === 'DEBT';
+  const categoryOptions = categories.filter((c) => !filters.type || (!uncategorised && c.type === filters.type));
 
   return (
     <Stack spacing={2}>
@@ -115,6 +114,7 @@ export function TransactionFilterBar({
           <MenuItem value="EXPENSE">Expenses</MenuItem>
           <MenuItem value="INCOME">Income</MenuItem>
           <MenuItem value="TRANSFER">Transfers</MenuItem>
+          <MenuItem value="DEBT">Lend & borrow</MenuItem>
         </TextField>
         <TextField
           select
@@ -138,7 +138,7 @@ export function TransactionFilterBar({
           label="Category"
           value={filters.categoryId ?? ''}
           onChange={(e) => setFilter('categoryId', e.target.value || undefined)}
-          disabled={filters.type === 'TRANSFER'}
+          disabled={uncategorised}
           sx={fieldSx}
         >
           <MenuItem value="">All categories</MenuItem>
